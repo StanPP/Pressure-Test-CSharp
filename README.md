@@ -15,7 +15,7 @@ The code has been built and tested on Windows 10 Home edition.
 
 It is written in C# and tested using Visual Studio Community Edition
 
-The v1.0.0 code is specifically written for the Internet Explorere browser.
+The v1.0.0 code is coded for Internet Explorer, but can be swithced over to Firefox.  Both have been tried and are working, subject to the note below.
 
 
 Improvements, observations & future investigations
@@ -27,5 +27,7 @@ Consider using the URL for Reading (http://www.bbc.co.uk/weather/2639577) rather
 
 After 21:00 in the evening, this value disappears from the page for the current day, so I've added flexibility to allow this to be changed.  This could be an issue if this test were being run on an automated system late in the evening.
 
+
 ***Important Note***
+--------------------
 Visual Studio must be Run As Administrator when using IE.
