@@ -42,7 +42,7 @@ namespace PressureTestProject1
 
             // Set the Max time to wait for an object to be ready
             // against using an instance of the WebDriverWait class.
-            timeToWait = new TimeSpan(0, 0, 60); //30 Seconds
+            timeToWait = new TimeSpan(0, 0, 30); //30 Seconds
             wait = new WebDriverWait(driver, timeToWait);
         }
 
