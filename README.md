@@ -26,3 +26,6 @@ Parameterise the input to support other browsers.  Currently IE only, have tried
 Consider using the URL for Reading (http://www.bbc.co.uk/weather/2639577) rather than executing a search each time.
 
 After 21:00 in the evening, this value disappears from the page for the current day, so I've added flexibility to allow this to be changed.  This could be an issue if this test were being run on an automated system late in the evening.
+
+***Important Note***
+Visual Studio must be Run As Administrator when using IE.
