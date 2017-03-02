@@ -3,6 +3,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using OpenQA.Selenium;
 using OpenQA.Selenium.IE;
+using OpenQA.Selenium.Edge;
+using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.Support.UI;
 using System.Diagnostics;
 using System.Collections.Generic;
@@ -27,9 +29,10 @@ namespace PressureTestProject1
         // Setup the environment
         public void Setup()
         {
-            // Using IE
+            // Using IE but can be changed to Firefox.
             driver = new InternetExplorerDriver();
-
+            //driver = new FirefoxDriver();
+                        
             // BBC weather site
             baseUrl = "http://www.bbc.co.uk/weather/";
 
@@ -39,7 +42,7 @@ namespace PressureTestProject1
 
             // Set the Max time to wait for an object to be ready
             // against using an instance of the WebDriverWait class.
-            timeToWait = new TimeSpan(0, 0, 30); //30 Seconds
+            timeToWait = new TimeSpan(0, 0, 60); //30 Seconds
             wait = new WebDriverWait(driver, timeToWait);
         }
 
@@ -65,31 +68,31 @@ namespace PressureTestProject1
         // As this was a port from Java which used JSoup, this implementation uses NSoup as the HTML Parser.
         private int ExtractPressureData()
         {
-            int timeColumnIndex = 0;
-            String pressureAtGivenTime = "Not Set";
+            int timecolumnindex = 0;
+            String pressureatgiventime = "Not Set";
 
             // Using NSoup HTMLParser, get the page and locate the weather
             // table
-            Document Doc;
+            Document document;
 
             try
             {
                 // Load the page into the HTML parser
                 IConnection conn = NSoup.Helper.HttpConnection.Connect(driver.Url);
-                Doc = conn.Get();
+                document = conn.Get();
 
                 // Locate the weather table which holds the time and pressure data
-                Elements TableElements = Doc.Select("table.weather");
+                Elements TableElements = document.Select("table.weather");
 
                 // Loop through the header to find the desired time
                 // and record its column position
-                Elements TableHeaderElements = TableElements.Select("thead tr th");
+                Elements tableheaderelements = TableElements.Select("thead tr th");
 
-                for (int i = 0; i < TableHeaderElements.Count(); i++)
+                for (int i = 0; i < tableheaderelements.Count(); i++)
                 {
-                    if (TableHeaderElements.ElementAt(i).Children.Text.StartsWith(timeToFind))
+                    if (tableheaderelements.ElementAt(i).Children.Text.StartsWith(timeToFind))
                     {
-                        timeColumnIndex = i - 1; // Take off 1 as the header text "Time"
+                        timecolumnindex = i - 1; // Take off 1 as the header text "Time"
                                                  // is included in the count, and no header
                                                  // text is included in the pressure row.
                     }
@@ -99,25 +102,25 @@ namespace PressureTestProject1
                 // row is found,
                 // then loop through the pressure data to find the value in the
                 // same column as the desired time.
-                Elements TableRowElements = TableElements.Select(":not(thead) tr");
+                Elements tablerowelements = TableElements.Select(":not(thead) tr");
 
                 // row loop
-                for (int i = 0; i < TableRowElements.Count(); i++)
+                for (int i = 0; i < tablerowelements.Count(); i++)
                 {
-                    Element Row = TableRowElements.ElementAt(i);
+                    Element row = tablerowelements.ElementAt(i);
 
-                    if (Row.Text().StartsWith("Pressure"))
+                    if (row.Text().StartsWith("Pressure"))
                     {
                         // Loop through the pressure data
                         // Need to take the value from the same column as the
                         // desired time
-                        Elements RowItems = Row.Select("td");
-                        for (int j = 0; j < RowItems.Count(); j++)
+                        Elements rowitems = row.Select("td");
+                        for (int j = 0; j < rowitems.Count(); j++)
                         {
-                            if (j == timeColumnIndex)
+                            if (j == timecolumnindex)
                             {
                                 // Record this pressure
-                                pressureAtGivenTime = RowItems.ElementAt(j).Text();
+                                pressureatgiventime = rowitems.ElementAt(j).Text();
                             }
                         }
                     }
@@ -128,7 +131,7 @@ namespace PressureTestProject1
                 // TODO: catch block
             }
 
-            return Convert.ToInt32(pressureAtGivenTime);
+            return Convert.ToInt32(pressureatgiventime);
         }
 
 
@@ -140,9 +143,9 @@ namespace PressureTestProject1
         public void TestWeatherPressure()
         {
             // Setup initial values
-            int pressureDay1 = 0;
-            int pressureDay2 = 0;
-            String ErrorMessage = "No Error";
+            int pressureday1 = 0;
+            int pressureday2 = 0;
+            String errormessage = "No Error";
 
             // Setup the environment
             Setup();
@@ -167,7 +170,7 @@ namespace PressureTestProject1
                     //
                     // extract pressure for 21:00 from the table for today
                     //
-                    pressureDay1 = ExtractPressureData();
+                    pressureday1 = ExtractPressureData();
 
                     //
                     // Move to next day
@@ -181,24 +184,24 @@ namespace PressureTestProject1
                         //
                         // extract pressure for the desired time for tomorrow
                         //
-                        pressureDay2 = ExtractPressureData();
+                        pressureday2 = ExtractPressureData();
 
                         // Output the result to the Test Console
-                        if (pressureDay1 == pressureDay2)
+                        if (pressureday1 == pressureday2)
                         {
-                            Console.WriteLine("Pressure has not changed, remaining at " + pressureDay1);
+                            Console.WriteLine("Pressure has not changed, remaining at " + pressureday1);
                         }
                         else
                         {
-                            if (pressureDay1 > pressureDay2)
+                            if (pressureday1 > pressureday2)
                             {
-                                Console.WriteLine("Pressure decreased by " + (pressureDay1 - pressureDay2) + " from today "
-                                        + pressureDay1 + " to tomorrow " + pressureDay2);
+                                Console.WriteLine("Pressure decreased by " + (pressureday1 - pressureday2) + " from today "
+                                        + pressureday1 + " to tomorrow " + pressureday2);
                             }
                             else
                             {
-                                Console.WriteLine("Pressure increased by " + (pressureDay2 - pressureDay1) + " from today "
-                                        + pressureDay1 + " to tomorrow " + pressureDay2);
+                                Console.WriteLine("Pressure increased by " + (pressureday2 - pressureday1) + " from today "
+                                        + pressureday1 + " to tomorrow " + pressureday2);
                             }
                         }
 
@@ -206,27 +209,28 @@ namespace PressureTestProject1
                     }
                     else
                     {
-                        ErrorMessage = "page not ready";
+                        errormessage = "page not ready";
                     }
                 }
                 else
                 {
-                    ErrorMessage = "detail-table-view not present";
+                    errormessage = "detail-table-view not present";
                 }
             }
             else
             {
-                ErrorMessage = "locator-form-search not present";
+                errormessage = "locator-form-search not present";
             }
 
-            if (!ErrorMessage.Equals("No Error"))
+            if (!errormessage.Equals("No Error"))
             {
                 // Output error string if an error is set
-                Console.WriteLine(ErrorMessage);
+                Console.WriteLine(errormessage);
             }
 
             // Close the browser
             driver.Close();
+            driver.Quit();
         }
     }
 }
